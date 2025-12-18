@@ -1,0 +1,79 @@
+# City-Level Food Waste Prediction & Intelligent Donation Routing
+
+**One-line:** Predict surplus food at city zones and optimize donation routing to NGOs — end-to-end ML + geospatial + optimization + deployment.
+
+## Features
+- Synthetic + real data ingestion
+- Zone-level surplus forecasting (XGBoost + LSTM)
+- Hotspot detection (Clustering)
+- Vehicle routing optimizer (OR-Tools)
+- Interactive dashboard (Streamlit)
+- Dockerized deployment + reproducible experiments
+
+## Quick start
+1. Clone repo
+2. `pip install -r requirements.txt`
+3. Generate synthetic data: `python synthetic_data_generator.py`
+4. Train XGBoost: `python src/train_xgb.py`
+5. Run API: `uvicorn src.api.app:app --reload`
+6. Start dashboard: `streamlit run frontend/streamlit_app.py`
+
+Pune Food Waste Prediction & Intelligent Donation Routing
+End-to-End Machine Learning + Geospatial Optimization System
+
+An AI-powered system that predicts food surplus from restaurants and optimizes donation routes to NGOs using real Pune city datasets, geospatial analytics, machine learning, and route optimization — deployed as an interactive Streamlit application.
+
+Project Overview
+
+Food wastage is a major urban challenge, while many NGOs struggle with inconsistent food supply.
+This project bridges that gap by building an end-to-end intelligent system that:
+
+Predicts food surplus potential at restaurant level
+
+Identifies high-impact surplus hotspots using geospatial clustering
+
+Matches surplus restaurants with nearby NGOs
+
+Optimizes donation routes to minimize distance and time
+
+Visualizes everything in a live interactive web app
+
+ City Focus: Pune, India
+ Data: Real restaurant, NGO, and municipal solid-waste datasets
+ Impact: Reduced food wastage, faster donation logistics, lower CO₂ emissions
+
+
+System Architecture
+Real City Data
+   ↓
+Data Cleaning & Standardization
+   ↓
+Geospatial EDA & Hotspot Detection
+   ↓
+ML-based Surplus Prediction
+   ↓
+Supply–Demand Matching
+   ↓
+Route Optimization
+   ↓
+Streamlit Web App
+
+
+
+Datasets Used (Real-World)
+
+Restaurant Data (Zomato + OpenStreetMap)
+
+Cuisine, pricing, ratings, precise geolocation
+
+NGO Data (Government & Public Directories)
+
+Verified NGO locations across Pune
+
+Municipal Solid Waste Data (PMC)
+
+Ward-level waste generation, household statistics
+
+Geospatial Boundaries
+
+Pune electoral ward shapefiles
