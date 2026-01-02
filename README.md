@@ -3,7 +3,7 @@ End-to-End Machine Learning & Geospatial Optimization System
 An AI-powered system designed to predict food surplus generation from restaurants and optimize donation routes to NGOs using real-world Pune city datasets, machine learning, and geospatial analytics.
 The system is deployed as an interactive Streamlit web application for real-time visualization and decision support.
 
- Key Highlights
+Key Highlights
 
 Uses real municipal, restaurant, and NGO datasets — no synthetic data
 
@@ -26,14 +26,10 @@ Computes impact metrics such as average route distance and estimated CO₂ reduc
 Built with a modular, production-ready ML pipeline that can scale to other cities
 
 
- Technologies Used
-
+TECHNOLOGY:
 Python, Pandas, NumPy
-
 Scikit-learn (Random Forest)
-
 GeoPandas, Shapely, PyProj
-
 Folium & Streamlit for visualization
 
-Git & GitHub for version control
+
