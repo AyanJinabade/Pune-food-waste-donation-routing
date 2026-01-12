@@ -21,8 +21,6 @@ Generates optimized donation routes to minimize travel distance and time
 
 Provides interactive maps and dashboards via Streamlit
 
-Computes impact metrics such as average route distance and estimated CO₂ reduction
-
 Built with a modular, production-ready ML pipeline that can scale to other cities
 
 
