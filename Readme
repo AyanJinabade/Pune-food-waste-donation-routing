@@ -1,79 +1,212 @@
-# City-Level Food Waste Prediction & Intelligent Donation Routing
+City-Level Food Waste Prediction & Intelligent Donation Routing
 
-**One-line:** Predict surplus food at city zones and optimize donation routing to NGOs — end-to-end ML + geospatial + optimization + deployment.
-
-## Features
-- Synthetic + real data ingestion
-- Zone-level surplus forecasting (XGBoost + LSTM)
-- Hotspot detection (Clustering)
-- Vehicle routing optimizer (OR-Tools)
-- Interactive dashboard (Streamlit)
-- Dockerized deployment + reproducible experiments
-
-## Quick start
-1. Clone repo
-2. `pip install -r requirements.txt`
-3. Generate synthetic data: `python synthetic_data_generator.py`
-4. Train XGBoost: `python src/train_xgb.py`
-5. Run API: `uvicorn src.api.app:app --reload`
-6. Start dashboard: `streamlit run frontend/streamlit_app.py`
-
-Pune Food Waste Prediction & Intelligent Donation Routing
 End-to-End Machine Learning + Geospatial Optimization System
 
-An AI-powered system that predicts food surplus from restaurants and optimizes donation routes to NGOs using real Pune city datasets, geospatial analytics, machine learning, and route optimization — deployed as an interactive Streamlit application.
+Predict surplus food at city zones and intelligently optimize donation routes to NGOs using machine learning, geospatial analytics, and route optimization.
 
-Project Overview
+This system analyzes restaurant data, identifies surplus food hotspots, and generates optimized routes to help NGOs collect food efficiently and reduce urban food waste.
 
-Food wastage is a major urban challenge, while many NGOs struggle with inconsistent food supply.
-This project bridges that gap by building an end-to-end intelligent system that:
+Project Overview:
 
-Predicts food surplus potential at restaurant level
+Food wastage is a major urban challenge while many NGOs struggle with inconsistent food supply.
 
-Identifies high-impact surplus hotspots using geospatial clustering
+This project builds an intelligent donation logistics system that:
 
-Matches surplus restaurants with nearby NGOs
+Predicts surplus food generation at restaurant locations
 
-Optimizes donation routes to minimize distance and time
+Detects surplus hotspots using geospatial clustering
 
-Visualizes everything in a live interactive web app
+Matches restaurants with nearby NGOs
 
- City Focus: Pune, India
- Data: Real restaurant, NGO, and municipal solid-waste datasets
- Impact: Reduced food wastage, faster donation logistics, lower CO₂ emissions
+Optimizes donation routes using vehicle routing algorithms
 
+Visualizes data through an interactive dashboard
+
+City Focus: Pune, India
+Approach: Machine Learning + Geospatial Analytics + Optimization
+Impact: Reduced food waste and faster NGO food collection
 
 System Architecture
 Real City Data
-   ↓
+      ↓
 Data Cleaning & Standardization
-   ↓
-Geospatial EDA & Hotspot Detection
-   ↓
-ML-based Surplus Prediction
-   ↓
+      ↓
+Geospatial Analysis & Hotspot Detection
+      ↓
+Machine Learning Surplus Prediction
+      ↓
 Supply–Demand Matching
-   ↓
+      ↓
+Route Optimization (Vehicle Routing)
+      ↓
+Interactive Dashboard (Streamlit)
+
+Key Features
+
+Restaurant-level food surplus prediction
+
+Geospatial hotspot detection using clustering
+
+NGO–restaurant matching algorithm
+
+Vehicle Routing Optimization (VRP) using OR-Tools
+
+Interactive Streamlit dashboard
+
+Fully reproducible ML pipeline
+
+Dockerized deployment
+
+Machine Learning Models
+Surplus Prediction
+
+XGBoost
+
+LSTM (Time-series forecasting)
+
+Geospatial Analytics
+
+K-Means / DBSCAN clustering
+
+Spatial hotspot detection
+
 Route Optimization
-   ↓
-Streamlit Web App
 
+Google OR-Tools Vehicle Routing Problem (VRP)
 
+ Project Structure
+food-waste-routing
+│
+├── data
+│   ├── raw
+│   └── processed
+│
+├── src
+│   ├── data_processing
+│   ├── models
+│   ├── optimization
+│   └── api
+│
+├── frontend
+│   └── streamlit_app.py
+│
+├── notebooks
+│
+├── synthetic_data_generator.py
+├── requirements.txt
+└── Dockerfile
 
-Datasets Used (Real-World)
+Datasets Used
+Restaurant Data
 
-Restaurant Data (Zomato + OpenStreetMap)
+Source: Zomato + OpenStreetMap
 
-Cuisine, pricing, ratings, precise geolocation
+Includes:
 
-NGO Data (Government & Public Directories)
+Restaurant location
 
-Verified NGO locations across Pune
+Cuisine types
 
-Municipal Solid Waste Data (PMC)
+Ratings
 
-Ward-level waste generation, household statistics
+Pricing data
 
-Geospatial Boundaries
+NGO Data
 
-Pune electoral ward shapefiles
+Source: Public NGO directories
+
+Includes:
+
+NGO locations
+
+Donation capacity
+
+Service areas
+
+Municipal Solid Waste Data
+
+Source: Pune Municipal Corporation (PMC)
+
+Includes:
+
+Ward-level waste statistics
+
+Household distribution
+
+Waste generation trends
+
+Geospatial Data
+
+Pune ward boundary shapefiles
+
+Geolocation coordinates
+
+Tech Stack
+Programming
+
+Python
+
+Data Science
+
+Pandas
+
+NumPy
+
+Scikit-learn
+
+XGBoost
+
+Geospatial Analytics
+
+GeoPandas
+
+Shapely
+
+Folium
+
+Optimization
+
+Google OR-Tools
+
+Visualization
+
+Streamlit
+
+Matplotlib
+
+Seaborn
+
+Deployment
+
+FastAPI
+
+Docker
+
+Quick Start
+Clone Repository
+git clone https://github.com/AyanJinabade/Data-Analyst.git
+cd Data-Analyst
+Install Dependencies
+pip install -r requirements.txt
+Generate Synthetic Data
+python synthetic_data_generator.py
+Train ML Model
+python src/train_xgb.py
+Run API
+uvicorn src.api.app:app --reload
+Start Dashboard
+streamlit run frontend/streamlit_app.py
+
+Impact
+
+This system enables:
+
+Faster NGO food collection
+
+Reduced food waste
+
+Optimized donation logistics
+
+Data-driven decision making
+
+Potentially helping cities recover thousands of meals daily.
