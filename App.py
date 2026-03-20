@@ -1,4 +1,3 @@
-
 import streamlit as st
 import geopandas as gpd
 import pandas as pd
@@ -6,161 +5,144 @@ import folium
 from streamlit_folium import st_folium
 from pathlib import Path
 
-
-# Page Config
-
 st.set_page_config(
     page_title="Pune Food Waste & Donation Routing",
     layout="wide"
 )
 
 st.title("🍽️ Pune Food Waste Prediction & Donation Routing")
-st.markdown(
-    "AI-powered system to predict food surplus and optimize NGO donation routes in Pune."
-)
+st.markdown("AI-powered system to predict food surplus and optimize NGO routes.")
 
-
-# Load Data (Cached)
 @st.cache_data
 def load_data():
-
     base = Path("data")
 
-    try:
-        restaurants = gpd.read_file(base / "restaurants_with_surplus.geojson")
-    except:
-        restaurants = gpd.GeoDataFrame()
+    def safe_load_geo(path):
+        try:
+            gdf = gpd.read_file(path)
+            if gdf.crs is None:
+                gdf.set_crs(epsg=4326, inplace=True)
+            else:
+                gdf = gdf.to_crs(epsg=4326)
+            return gdf
+        except:
+            return gpd.GeoDataFrame()
 
-    try:
-        ngos = gpd.read_file(base / "ngos_clustered.geojson")
-    except:
-        ngos = gpd.GeoDataFrame()
+    def safe_load_csv(path):
+        try:
+            return pd.read_csv(path)
+        except:
+            return pd.DataFrame()
 
-    try:
-        routes = pd.read_csv(base / "optimized_donation_routes.csv")
-    except:
-        routes = pd.DataFrame()
-
-    return restaurants, ngos, routes
-
+    return (
+        safe_load_geo(base / "restaurants_with_surplus.geojson"),
+        safe_load_geo(base / "ngos_clustered.geojson"),
+        safe_load_csv(base / "optimized_donation_routes.csv")
+    )
 
 restaurants, ngos, routes = load_data()
-
-# Data Cleaning
-
 if "predicted_surplus" in restaurants.columns:
     restaurants["predicted_surplus"] = pd.to_numeric(
         restaurants["predicted_surplus"], errors="coerce"
     ).fillna(0)
 
 if "distance_km" in routes.columns:
-    routes["distance_km"] = pd.to_numeric(
-        routes["distance_km"], errors="coerce"
-    )
+    routes["distance_km"] = pd.to_numeric(routes["distance_km"], errors="coerce")
 
-# NGO label safety
-def get_ngo_label(row):
-    return (
-        row.get("ngo_name")
-        or row.get("name")
-        or row.get("registration_clean")
-        or "NGO"
-    )
-
+# NGO label
 if not ngos.empty:
-    ngos["ngo_label"] = ngos.apply(get_ngo_label, axis=1)
+    ngos["ngo_label"] = ngos.apply(
+        lambda r: r.get("ngo_name") or r.get("name") or "NGO",
+        axis=1
+    )
 
-# Sidebar Controls
 st.sidebar.header("Controls")
 
-if not restaurants.empty:
+if not restaurants.empty and "predicted_surplus" in restaurants.columns:
 
-    min_surplus = st.sidebar.slider(
-        "Minimum surplus threshold",
-        float(restaurants["predicted_surplus"].min()),
-        float(restaurants["predicted_surplus"].max()),
-        float(restaurants["predicted_surplus"].quantile(0.8))
-    )
+    min_val = float(restaurants["predicted_surplus"].min())
+    max_val = float(restaurants["predicted_surplus"].max())
+
+    if min_val == max_val:
+        st.sidebar.warning("All surplus values are the same.")
+        threshold = min_val
+    else:
+        threshold = st.sidebar.slider(
+            "Minimum surplus threshold",
+            min_val,
+            max_val,
+            float(restaurants["predicted_surplus"].quantile(0.8))
+        )
 
     filtered_restaurants = restaurants[
-        restaurants["predicted_surplus"] >= min_surplus
+        restaurants["predicted_surplus"] >= threshold
     ]
 
 else:
+    st.warning("No restaurant data available.")
     filtered_restaurants = restaurants
 
-
-# KPI Section
 col1, col2, col3 = st.columns(3)
 
-col1.metric(
-    "High-Surplus Restaurants",
-    int(len(filtered_restaurants))
-)
+col1.metric("High-Surplus Restaurants", len(filtered_restaurants))
+col2.metric("NGOs Covered", len(ngos))
 
-col2.metric(
-    "NGOs Covered",
-    int(len(ngos))
+avg_dist = (
+    round(routes["distance_km"].mean(), 2)
+    if "distance_km" in routes.columns and not routes.empty
+    else 0
 )
-
-if "distance_km" in routes.columns and len(routes) > 0:
-    avg_dist = round(routes["distance_km"].mean(), 2)
-else:
-    avg_dist = 0
 
 col3.metric("Avg Route Distance (km)", avg_dist)
-
-# Map Visualization
 st.subheader("🗺️ Donation Map")
 
-m = folium.Map(
-    location=[18.5204, 73.8567],  # Pune
-    zoom_start=12,
-    tiles="CartoDB positron"
-)
+m = folium.Map(location=[18.5204, 73.8567], zoom_start=12)
+
+# Safe point extractor
+def get_coords(geom):
+    try:
+        return geom.y, geom.x
+    except:
+        return None
 
 # Restaurants
 for _, row in filtered_restaurants.iterrows():
-
-    if row.geometry is None:
+    coords = get_coords(row.geometry)
+    if not coords:
         continue
 
     folium.CircleMarker(
-        location=[row.geometry.y, row.geometry.x],
-        radius=6,
+        location=coords,
+        radius=5,
         color="red",
         fill=True,
         fill_opacity=0.7,
-        popup=f"""
-        <b>{row.get('name','Restaurant')}</b><br>
-        Surplus: {row.get('predicted_surplus',0):.2f}
-        """
+        popup=f"{row.get('name','Restaurant')}<br>Surplus: {row.get('predicted_surplus',0):.2f}"
     ).add_to(m)
 
 # NGOs
 for _, row in ngos.iterrows():
-
-    if row.geometry is None:
+    coords = get_coords(row.geometry)
+    if not coords:
         continue
 
     folium.Marker(
-        location=[row.geometry.y, row.geometry.x],
-        icon=folium.Icon(color="blue", icon="home"),
+        location=coords,
+        icon=folium.Icon(color="blue"),
         popup=row.get("ngo_label", "NGO")
     ).add_to(m)
 
 # Routes
-route_cols = [
-    "geometry_restaurant_x",
-    "geometry_restaurant_y",
-    "geometry_ngo_x",
-    "geometry_ngo_y"
+required_cols = [
+    "geometry_restaurant_x", "geometry_restaurant_y",
+    "geometry_ngo_x", "geometry_ngo_y"
 ]
 
-if all(col in routes.columns for col in route_cols):
+if all(col in routes.columns for col in required_cols):
 
-    for _, row in routes.iterrows():
+    routes_clean = routes.dropna(subset=required_cols)
 
+    for _, row in routes_clean.iterrows():
         folium.PolyLine(
             locations=[
                 (row["geometry_restaurant_y"], row["geometry_restaurant_x"]),
@@ -171,25 +153,15 @@ if all(col in routes.columns for col in route_cols):
             opacity=0.6
         ).add_to(m)
 
-# Display map
 st_folium(m, width=1200, height=600)
 
-
-# Routes Table
 st.subheader("📊 Optimized Donation Routes")
 
 if "distance_km" in routes.columns:
-
-    st.dataframe(
-        routes.sort_values("distance_km").head(25),
-        use_container_width=True
-    )
-
+    st.dataframe(routes.sort_values("distance_km").head(25))
 else:
+    st.dataframe(routes.head(25))
 
-    st.dataframe(routes.head(25), use_container_width=True)
-
-# Footer
 st.markdown(
     "---\n"
     "**Built by Ayan Jinabade** | Data Science • GeoSpatial • AI Routing"
