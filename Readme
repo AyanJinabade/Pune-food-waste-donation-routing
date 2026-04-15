@@ -182,20 +182,6 @@ FastAPI
 
 Docker
 
-Quick Start
-Clone Repository
-git clone https://github.com/AyanJinabade/Data-Analyst.git
-cd Data-Analyst
-Install Dependencies
-pip install -r requirements.txt
-Generate Synthetic Data
-python synthetic_data_generator.py
-Train ML Model
-python src/train_xgb.py
-Run API
-uvicorn src.api.app:app --reload
-Start Dashboard
-streamlit run frontend/streamlit_app.py
 
 Impact
 
